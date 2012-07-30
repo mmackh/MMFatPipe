@@ -13,68 +13,76 @@
 
 - (void)sendImagewithToken:(NSString *)token andImageData:(id)imageData andTitle:(NSString *)title andNote:(NSString *)note
 {
-    // Resize the image before dismissing the Camera.
     
-    // A4 Aspect Ratio : 210:297 -> 297 x 210
-    // iPhone 3GS : 2048 × 1536
-    
-    
-    
-    // iPhone 4 : 2592 × 1936
-    
-    
-    
-    // iPhone 4s : 3264 x 2448
-    
-       
-    UIImage *instapdfdoc = [MMFatPipe imageWithImage:imageData scaledToSizeWithSameAspectRatio:CGSizeMake(1296,968)];
-    
-    NSString *urlString = @"http://example.com/post";
-    
-    
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:urlString]];
-    [request setHTTPMethod:@"POST"];
-    
-    NSString *boundary = @"---------------------------46782733362863682664648476844";
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-    [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
-    
-    NSMutableData *body = [NSMutableData data];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"imageone\"; filename=\"imageone.jpg\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[NSData dataWithData:UIImageJPEGRepresentation(instapdfdoc, 0.6)]];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setHTTPBody:body];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response,
-        NSData *data,
-        NSError *error)
-     {
-         if ([data length] > 0 && error == nil)
-         {
-             response = nil;
-             data = nil;
-             error = nil;
-             [NSURLConnection cancelPreviousPerformRequestsWithTarget:self];
-             [[NSNotificationCenter defaultCenter] postNotificationName:@"UploadFinished" object:nil];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        
+        // Resize the image before dismissing the Camera.
+        
+        // A4 Aspect Ratio : 210:297 -> 297 x 210
+        // iPhone 3GS : 2048 × 1536
+        
+        
+        
+        // iPhone 4 : 2592 × 1936
+        
+        
+        
+        // iPhone 4s : 3264 x 2448
+        
+        UIImage *instapdfdoc = [self imageWithImage:imageData scaledToSizeWithSameAspectRatio:CGSizeMake(1296,968)];
 
-         }
-         else if ([data length] == 0 && error == nil)
+
+        
+        NSString *urlString = @"https://upload.com/post";
+        
+        
+        
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        [request setURL:[NSURL URLWithString:urlString]];
+        [request setHTTPMethod:@"POST"];
+        
+        NSString *boundary = @"---------------------------46782733362863682664648476844";
+        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+        [request addValue:contentType forHTTPHeaderField: @"Content-Type"];
+        
+        NSMutableData *body = [NSMutableData data];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"imageone\"; filename=\"imageone.jpg\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[NSData dataWithData:UIImageJPEGRepresentation(instapdfdoc, 0.6)]];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setHTTPBody:body];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response,
+            NSData *data,
+            NSError *error)
          {
-             NSLog(@"Nothing was uploaded.");
-         }
-         else if (error != nil){
-             NSLog(@"Error = %@", error);
-         }
-         
-     }];
+             if ([data length] > 0 && error == nil)
+             {
+                 response = nil;
+                 data = nil;
+                 error = nil;
+                 [NSURLConnection cancelPreviousPerformRequestsWithTarget:self];
+                 [[NSNotificationCenter defaultCenter] postNotificationName:@"UploadFinished" object:nil];
+
+             }
+             else if ([data length] == 0 && error == nil)
+             {
+                 NSLog(@"Nothing was uploaded.");
+             }
+             else if (error != nil){
+                 NSLog(@"Error = %@", error);
+             }
+             
+         }];
+        
+    });
     
 }
 
-+ (UIImage*)imageWithImage:(UIImage*)sourceImage scaledToSizeWithSameAspectRatio:(CGSize)targetSize;
+- (UIImage*)imageWithImage:(UIImage*)sourceImage scaledToSizeWithSameAspectRatio:(CGSize)targetSize;
 {
     CGSize imageSize = sourceImage.size;
     CGFloat width = imageSize.width;
