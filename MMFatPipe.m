@@ -22,13 +22,7 @@
         
         // A4 Aspect Ratio : 210:297 -> 297 x 210
         // iPhone 3GS : 2048 × 1536
-        
-        
-        
         // iPhone 4 : 2592 × 1936
-        
-        
-        
         // iPhone 4s : 3264 x 2448
         
         UIImage *instapdfdoc = [self imageWithImage:imageData scaledToSizeWithSameAspectRatio:CGSizeMake(1296,968)];
@@ -36,7 +30,6 @@
 
         
         NSString *urlString = @"https://upload.com/post";
-        
         
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -56,8 +49,8 @@
         [request setHTTPBody:body];
         
         [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response,
-            NSData *data,
-            NSError *error)
+                                                                                                                   NSData *data,
+                                                                                                                   NSError *error)
          {
              if ([data length] > 0 && error == nil)
              {
@@ -66,7 +59,7 @@
                  error = nil;
                  [NSURLConnection cancelPreviousPerformRequestsWithTarget:self];
                  [[NSNotificationCenter defaultCenter] postNotificationName:@"UploadFinished" object:nil];
-
+                 
              }
              else if ([data length] == 0 && error == nil)
              {
@@ -82,7 +75,7 @@
     
 }
 
-- (UIImage*)imageWithImage:(UIImage*)sourceImage scaledToSizeWithSameAspectRatio:(CGSize)targetSize;
+- (UIImage*)imageWithImage:(UIImage*)sourceImage scaledToSizeWithSameAspectRatio:(CGSize)targetSize
 {
     CGSize imageSize = sourceImage.size;
     CGFloat width = imageSize.width;
@@ -95,13 +88,17 @@
     CGPoint thumbnailPoint = CGPointMake(0.0,0.0);
 	
     if (CGSizeEqualToSize(imageSize, targetSize) == NO) {
-        CGFloat widthFactor = targetWidth / width;
-        CGFloat heightFactor = targetHeight / height;
-		
+        CGFloat widthFactor = targetWidth / height;
+        CGFloat heightFactor = targetHeight / width;
+        
+        if ((sourceImage.imageOrientation == UIImageOrientationUp) || (sourceImage.imageOrientation == UIImageOrientationDown)) {
+            widthFactor = targetWidth / width;
+            heightFactor = targetHeight / height;
+        }
+        
         if (widthFactor > heightFactor) {
             scaleFactor = widthFactor; // scale to fit height
-        }
-        else {
+        } else {
             scaleFactor = heightFactor; // scale to fit width
         }
 		
@@ -110,10 +107,10 @@
 		
         // center the image
         if (widthFactor > heightFactor) {
-            thumbnailPoint.y = (targetHeight - scaledHeight) * 0.5;
+            thumbnailPoint.y = 0;
         }
         else if (widthFactor < heightFactor) {
-            thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
+            thumbnailPoint.x = 0;
         }
     }
 	
@@ -156,7 +153,7 @@
         CGContextTranslateCTM (bitmap, -targetWidth, 0);
 		
     } else if (sourceImage.imageOrientation == UIImageOrientationUp) {
-        // NOTHING
+        
     } else if (sourceImage.imageOrientation == UIImageOrientationDown) {
         CGContextTranslateCTM (bitmap, targetWidth, targetHeight);
         CGContextRotateCTM (bitmap, -180./57.2958);
@@ -170,6 +167,7 @@
     CGImageRelease(ref);
 	
     return newImage;
+    
 }
 
 @end
