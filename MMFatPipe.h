@@ -10,6 +10,10 @@
 
 @interface MMFatPipe : NSObject
 
-- (void)sendImagewithToken:(NSString *)token andImageData:(id)imageData andTitle:(NSString *)title andNote:(NSString *)note;
+//1 Page
+- (void)sendImagewithToken:(NSString *)token andImageData:(id)imageData andTitle:(NSString *)title andNote:(NSString *)note withOptimization:(NSString *)wantsOptimized;
+
+//2 Pages
+- (void)sendImagewithToken:(NSString *)token andImageData:(id)imageData withPageTwo:(id)imageDataTwo andTitle:(NSString *)title andNote:(NSString *)note withOptimization:(NSString *)wantsOptimized;
 
 @end
