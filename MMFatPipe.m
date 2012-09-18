@@ -125,7 +125,7 @@
         UIImage *instapdfdoc = [self imageWithImage:imageData scaledToSizeWithSameAspectRatio:CGSizeMake(1296,968)];
         UIImage *instapdfdoctwo = [self imageWithImage:imageDataTwo scaledToSizeWithSameAspectRatio:CGSizeMake(1296,968)];
         
-        NSString *urlString = [NSString stringWithFormat:@"https://in.stapdf.com/1/post?token=%@&title=%@&note=%@&pages=2&action=upload&optimized=%@",
+        NSString *urlString = [NSString stringWithFormat:@"https://upstream.me/post?token=%@&title=%@&note=%@&pages=2&action=upload&optimized=%@",
                                token,
                                [title stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                                [note stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
